@@ -1,7 +1,287 @@
-<html>
-	<head>
-	</head>
-	<body>
-		Homework 4 index.html here
-	</body>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<style>
+  body {
+    padding: 100px;
+    width: 1000px;
+    margin: auto;
+    text-align: left;
+    font-weight: 300;
+    font-family: 'Open Sans', sans-serif;
+    color: #121212;
+  }
+  h1, h2, h3, h4 {
+    font-family: 'Source Sans Pro', sans-serif;
+  }
+</style>
+<title>CS 184 Mesh Editor</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Sans+Pro" rel="stylesheet">
+</head>
+
+
+<body>
+
+<h1 align="middle">CS 184: Computer Graphics and Imaging, Spring 2024</h1>
+<h1 align="middle">Project 4: Cloth Simulator</h1>
+<h2 align="middle">Tony Xin, Jeremy Chow</h2>
+
+<br><br>
+
+<div>
+
+<h2 align="middle">Overview</h2>
+<p>In this project, we created real-time simulation of cloth by implementing a mass-spring system, simulation via numerical integration, collision with other objects, handling self-collisions, and shaders. The process of implementing a mass-spring system to replicate how a cloth moves in real life was really interesting, seeing how these small parts come together to model the real world. We use real world physics and can model many different interactions with simple parts that create the cloth interacting with each other.</p>
+
+<h2 align="middle">Part I: Masses and springs</h2>
+
+<div align="middle">
+  <table style="width:100%">
+    <tr align="center">
+      <td>
+        <img src="images/shearing.jpg" align="middle" width="400px"/>
+        <figcaption>Only shearing constraints</figcaption>
+      </td>
+      <td>
+        <img src="images/structural_bending.jpg" align="middle" width="400px"/>
+        <figcaption>Without shearing constraints</figcaption>
+      </td>
+    </tr>
+    <tr align="center">
+      <td>
+        <img src="images/all.jpg" align="middle" width="400px"/>
+        <figcaption>All constraints</figcaption>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<h2 align="middle">Part II: Simulation via numerical integration</h2>
+
+
+<div align="middle">
+  <table style="width:100%">
+    <tr align="center">
+      <td>
+        <img src="images/lowka.png" align="middle" width="400px"/>
+        <figcaption>Low ka</figcaption>
+      </td>
+      <td>
+        <img src="images/highka.png" align="middle" width="400px"/>
+        <figcaption>High ka</figcaption>
+      </td>
+    </tr>
+  </table>
+</div>
+<p>With a very low ks, the middle of the cloth drops lower because there is less spring forces that are pulling the non-pinned points of the cloth up against the force of gravity. If we make ks larger, then the cloth will become more stiff and will droop less due to gravity.</p>
+
+<div align="middle">
+  <table style="width:100%">
+    <tr align="center">
+      <td>
+        <img src="images/lowdenisty.png" align="middle" width="400px"/>
+        <figcaption>Low density</figcaption>
+      </td>
+      <td>
+        <img src="images/highdensity.png" align="middle" width="400px"/>
+        <figcaption>High density</figcaption>
+      </td>
+    </tr>
+  </table>
+</div>
+<p>With a low density, there are less creases in the cloth and the cloth looks overall more smooth and together as one with less curves. With higher density there are more ways that the cloth can crease and ends up creasing more and having more visible bends and imperfections.</p>
+
+<div align="middle">
+  <table style="width:100%">
+    <tr align="center">
+      <td>
+        <img src="images/lowdampening.png" align="middle" width="400px"/>
+        <figcaption>Low dampening</figcaption>
+      </td>
+      <td>
+        <img src="images/highdampening.png" align="middle" width="400px"/>
+        <figcaption>High dampening</figcaption>
+      </td>
+    </tr>
+  </table>
+</div>
+<p>With a very low damping percentage, all the force is being transferred and thus the cloth looks jumpy. The higher the damping is the changes of the cloth in space are slower and less in magnitude.</p>
+
+<div align="middle">
+  <table style="width:100%">
+    <tr align="center">
+      <td>
+        <img src="images/resting.jpg" align="middle" width="400px"/>
+        <figcaption>Resting pinned4.json</figcaption>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<h2 align="middle">Part III: Handling collisions with other objects</h2>
+
+<p>Cloth collision with sphere.</p>
+<div align="middle">
+  <table style="width:100%">
+    <tr align="center">
+      <td>
+        <img src="images/s500.jpg" align="middle" width="400px"/>
+        <figcaption>ks = 500</figcaption>
+      </td>
+      <td>
+        <img src="images/s5000.jpg" align="middle" width="400px"/>
+        <figcaption>ks = 5000</figcaption>
+      </td>
+    </tr>
+
+    <tr align="center">
+      <td>
+        <img src="images/s50000.jpg" align="middle" width="400px"/>
+        <figcaption>ks = 50000</figcaption>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<p>Cloth collision with plane.</p>
+<div align="middle">
+  <table style="width:100%">
+    <tr align="center">
+      <td>
+        <img src="images/flat.jpg" align="middle" width="400px"/>
+        <figcaption>Plane</figcaption>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<h2 align="middle">Part IV: Handling self-collisions</h2>
+
+<p>
+The following are three screenshots of the cloth in different stages of falling on itself and exhibiting self-collision.</p>
+<div align="middle">
+  <table style="width:100%">
+    <tr align="center">
+      <td>
+        <img src="images/early.png" align="middle" width="400px"/>
+        <figcaption>Early</figcaption>
+      </td>
+      <td>
+        <img src="images/mid.png" align="middle" width="400px"/>
+        <figcaption>Middle</figcaption>
+      </td>
+    </tr>
+
+    <tr align="center">
+      <td>
+        <img src="images/end.png" align="middle" width="400px"/>
+        <figcaption>End</figcaption>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<p>If the density of the cloth is high then we see that there are so many more small self-collisions instead of overall creases. And, if we increase ka, we can see that there are less small folds and more big, rigid folds.</p>
+  <div align="middle">
+    <table style="width:100%">
+      <tr align="center">
+        <td>
+          <img src="images/highdensityfall.png" align="middle" width="400px"/>
+          <figcaption>High density</figcaption>
+        </td>
+        <td>
+          <img src="images/highka.png" align="middle" width="400px"/>
+          <figcaption>Large ka</figcaption>
+        </td>
+      </tr>
+
+    </table>
+  </div>
+
+  <h2 align="middle">Part V: Shaders</h2>
+
+  <p>Shaders are programs that run on the GPU that execute specific graphics jobs. It controls and manipulates the way that graphics are rendered on a screen, especially regarding light, color, and texture effects. There are divided into several types, the most common being vertex and fragment shaders.</p>
+  <p>Vertex shaders apply transforms to verticies, modifying position and normal vectors while fragment shaders apply lighting and color effects. The interaction of these two shaders allow for the creation of sophisticated visual effects. Vertex shading can modify the geometry of an object to appear as if it were illuminated by a specific light source and the fragment shader can add detailed lighting effects.</p>
+
+  <p>The Blinn-Phong shading model the light is modeled by three main components: ambient, diffuse, and specular. Ambiant light is the light that is scattered around the enviornment equally, diffuse is light that comes from a single direction and scatters in all directions on interaction with a surface, and finally specular lighting is where objects have shiny highlights to make them look glossy.</p>
+
+  <div align="middle">
+    <table style="width:100%">
+      <tr align="center">
+        <td>
+          <img src="images/ambiant.jpg" align="middle" width="400px"/>
+          <figcaption>Ambiant only</figcaption>
+        </td>
+        <td>
+          <img src="images/diffuse.jpg" align="middle" width="400px"/>
+          <figcaption>Diffuse only</figcaption>
+        </td>
+      </tr>
+
+      <tr align="center">
+        <td>
+          <img src="images/specular.jpg" align="middle" width="400px"/>
+          <figcaption>Specular only</figcaption>
+        </td>
+        <td>
+          <img src="images/everything.jpg" align="middle" width="400px"/>
+          <figcaption>All</figcaption>
+        </td>
+      </tr>
+
+    </table>
+  </div>
+
+  <br><br><br>
+
+  <div align="middle">
+    <table style="width:100%">
+      <tr align="center">
+        <td>
+          <img src="images/custom.jpg" align="middle" width="400px"/>
+          <figcaption>Custom texture</figcaption>
+        </td>
+      </tr>
+
+      
+
+    </table>
+  </div>
+
+  <br><br><br>
+
+  <div align="middle">
+    <table style="width:100%">
+      <tr align="center">
+        <td>
+          <img src="images/bump.jpg" align="middle" width="400px"/>
+          <figcaption>Bump mapping</figcaption>
+        </td>
+        <td>
+          <img src="images/displacement.jpg" align="middle" width="400px"/>
+          <figcaption>Displacement mapping</figcaption>
+        </td>
+      </tr>
+
+    </table>
+  </div>
+
+  <p>The difference between bump and displacement mapping is that displacement actually modifies the geometry of the objects while bump modifies the color to give the illusion of depth. From a distance, you can't really tell the difference betewen the renders, but if you look close from specific renders, you can tell that the object has physically heightened parts in the displacement mapping.</p>
+
+  <p>By changing the sphere mesh's coarseness, we can see that the sphere becomes simplified to bigger blocks and thus thus shading becomes more inaccurate and more blocky. The render loses a lot of detail when we use a more coarse mesh with -o 16 -a 16.</p>
+
+  <div align="middle">
+    <table style="width:100%">
+      <tr align="center">
+        <td>
+          <img src="images/mirror.jpg" align="middle" width="400px"/>
+          <figcaption>Mirror shader</figcaption>
+        </td>
+      </tr>
+
+    </table>
+  </div>
+
+</body>
 </html>
